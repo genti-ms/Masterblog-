@@ -10,12 +10,18 @@ POSTS = [
     {"id": 3, "title": "Flask tutorial", "content": "Learn how to use Flask in this post."},
 ]
 
-
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
     sort_field = request.args.get('sort')
     direction = request.args.get('direction', 'asc')
+    page = request.args.get('page', 1, type=int)
+    limit = request.args.get('limit', 5, type=int)
 
+    if page < 1 or limit < 1:
+        return jsonify({"error": "Page and limit must be greater than 0."}), 400
+
+    # Paginierung und Sortierung der Posts
+    sorted_posts = POSTS
     if sort_field:
         if sort_field not in ('title', 'content'):
             return jsonify({"error": "Invalid sort field. Use 'title' or 'content'."}), 400
@@ -24,10 +30,21 @@ def get_posts():
 
         reverse = direction == 'desc'
         sorted_posts = sorted(POSTS, key=lambda post: post[sort_field].lower(), reverse=reverse)
-        return jsonify(sorted_posts)
 
-    return jsonify(POSTS)
+    start = (page - 1) * limit
+    end = start + limit
+    paginated_posts = sorted_posts[start:end]
 
+    total_posts = len(POSTS)
+    total_pages = (total_posts + limit - 1) // limit
+
+    return jsonify({
+        'total_posts': total_posts,
+        'page': page,
+        'limit': limit,
+        'total_pages': total_pages,
+        'posts': paginated_posts
+    })
 
 @app.route('/api/posts', methods=['POST'])
 def add_post():
@@ -49,7 +66,6 @@ def add_post():
 
     return jsonify(new_post), 201
 
-
 @app.route('/api/posts/<int:id>', methods=['DELETE'])
 def delete_post(id):
     post = next((post for post in POSTS if post['id'] == id), None)
@@ -59,7 +75,6 @@ def delete_post(id):
 
     POSTS.remove(post)
     return jsonify({"message": f"Post with id {id} has been deleted successfully."}), 200
-
 
 @app.route('/api/posts/<int:id>', methods=['PUT'])
 def update_post(id):
@@ -79,7 +94,6 @@ def update_post(id):
         "content": post["content"]
     }), 200
 
-
 @app.route('/api/posts/search', methods=['GET'])
 def search_posts():
     title_query = request.args.get('title', '').lower()
@@ -92,11 +106,7 @@ def search_posts():
 
     filtered_posts = [post for post in POSTS if matches(post)]
 
-    if not filtered_posts:
-        return jsonify({"message": "No posts matched the search criteria.", "results": []})
-
     return jsonify(filtered_posts)
-
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5002, debug=True)
