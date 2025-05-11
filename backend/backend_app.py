@@ -7,6 +7,7 @@ CORS(app)
 POSTS = [
     {"id": 1, "title": "First post", "content": "This is the first post."},
     {"id": 2, "title": "Second post", "content": "This is the second post."},
+    {"id": 3, "title": "Flask tutorial", "content": "Learn how to use Flask in this post."},
 ]
 
 
@@ -49,26 +50,35 @@ def delete_post(id):
 
 @app.route('/api/posts/<int:id>', methods=['PUT'])
 def update_post(id):
-    # Suche den Post mit der angegebenen ID
     post = next((post for post in POSTS if post["id"] == id), None)
 
-    # Falls der Post nicht existiert, gib eine 404 Fehlerantwort zurück
     if post is None:
         return jsonify({"error": f"Post with id {id} not found."}), 404
 
-    # Hol die neuen Daten aus der Anfrage
     data = request.get_json()
 
-    # Aktualisiere den Titel und Inhalt, falls diese im Body angegeben sind
     post["title"] = data.get("title", post["title"])
     post["content"] = data.get("content", post["content"])
 
-    # Rückgabe des aktualisierten Posts
     return jsonify({
         "id": post["id"],
         "title": post["title"],
         "content": post["content"]
     }), 200
+
+
+@app.route('/api/posts/search', methods=['GET'])
+def search_posts():
+    title_query = request.args.get('title', '').lower()
+    content_query = request.args.get('content', '').lower()
+
+    def matches(post):
+        matches_title = title_query in post['title'].lower() if title_query else False
+        matches_content = content_query in post['content'].lower() if content_query else False
+        return matches_title or matches_content
+
+    filtered_posts = [post for post in POSTS if matches(post)]
+    return jsonify(filtered_posts)
 
 
 if __name__ == '__main__':
