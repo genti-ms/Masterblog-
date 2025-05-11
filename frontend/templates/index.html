@@ -5,25 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog Posts</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="static/styles.css">
+    <link rel="stylesheet" href="static/styles.css"> <!-- CSS for styling -->
 </head>
 <body>
     <div class="container">
         <h1>📚 Blog Posts</h1>
+
+        <!-- Input field for API Base URL -->
         <div class="input-field">
             <input type="text" id="api-base-url" placeholder="Enter API Base URL" value="http://127.0.0.1:5002/api">
-            <button onclick="loadPosts()">Load Posts</button>
+            <button onclick="loadPosts()">Load Posts</button> <!-- Button to load posts -->
         </div>
+
+        <!-- Input fields for adding a new post -->
         <div class="input-field">
             <input type="text" id="post-title" placeholder="Enter Post Title">
             <input type="text" id="post-content" placeholder="Enter Post Content">
-            <button onclick="addPost()">Add Post</button>
+            <button onclick="addPost()">Add Post</button> <!-- Button to add a new post -->
         </div>
+
+        <!-- Container where the posts will be displayed -->
         <div id="post-container">
             <!-- Blog posts will be inserted here by JavaScript -->
         </div>
     </div>
 
+    <!-- Linking the main.js script -->
     <script src="static/main.js"></script>
 </body>
 </html>

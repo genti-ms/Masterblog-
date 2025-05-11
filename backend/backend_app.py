@@ -12,39 +12,7 @@ POSTS = [
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
-    sort_field = request.args.get('sort')
-    direction = request.args.get('direction', 'asc')
-    page = request.args.get('page', 1, type=int)
-    limit = request.args.get('limit', 5, type=int)
-
-    if page < 1 or limit < 1:
-        return jsonify({"error": "Page and limit must be greater than 0."}), 400
-
-    # Paginierung und Sortierung der Posts
-    sorted_posts = POSTS
-    if sort_field:
-        if sort_field not in ('title', 'content'):
-            return jsonify({"error": "Invalid sort field. Use 'title' or 'content'."}), 400
-        if direction not in ('asc', 'desc'):
-            return jsonify({"error": "Invalid direction. Use 'asc' or 'desc'."}), 400
-
-        reverse = direction == 'desc'
-        sorted_posts = sorted(POSTS, key=lambda post: post[sort_field].lower(), reverse=reverse)
-
-    start = (page - 1) * limit
-    end = start + limit
-    paginated_posts = sorted_posts[start:end]
-
-    total_posts = len(POSTS)
-    total_pages = (total_posts + limit - 1) // limit
-
-    return jsonify({
-        'total_posts': total_posts,
-        'page': page,
-        'limit': limit,
-        'total_pages': total_pages,
-        'posts': paginated_posts
-    })
+    return jsonify(POSTS)
 
 @app.route('/api/posts', methods=['POST'])
 def add_post():
@@ -105,7 +73,6 @@ def search_posts():
         return matches_title or matches_content
 
     filtered_posts = [post for post in POSTS if matches(post)]
-
     return jsonify(filtered_posts)
 
 if __name__ == '__main__':
