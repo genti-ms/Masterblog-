@@ -1,3 +1,5 @@
+let editingPostId = null;
+
 async function loadPosts() {
     const apiBaseUrl = document.getElementById("api-base-url").value;
     const response = await fetch(`${apiBaseUrl}/posts`);
@@ -21,12 +23,17 @@ async function loadPosts() {
         const content = document.createElement("p");
         content.textContent = post.content;
 
+        const editButton = document.createElement("button");
+        editButton.textContent = "Edit";
+        editButton.onclick = () => editPost(post.id);
+
         const deleteButton = document.createElement("button");
         deleteButton.textContent = "Delete";
         deleteButton.onclick = () => deletePost(post.id);
 
         postDiv.appendChild(title);
         postDiv.appendChild(content);
+        postDiv.appendChild(editButton);
         postDiv.appendChild(deleteButton);
 
         container.appendChild(postDiv);
@@ -75,4 +82,49 @@ async function deletePost(id) {
     }
 
     loadPosts();
+}
+
+async function editPost(postId) {
+    const apiBaseUrl = document.getElementById("api-base-url").value;
+    const response = await fetch(`${apiBaseUrl}/posts/${postId}`);
+    const post = await response.json();
+
+    document.getElementById("edit-title").value = post.title;
+    document.getElementById("edit-content").value = post.content;
+    document.getElementById("edit-container").style.display = "block";
+
+    editingPostId = postId;
+}
+
+async function updatePost() {
+    const apiBaseUrl = document.getElementById("api-base-url").value;
+    const title = document.getElementById("edit-title").value;
+    const content = document.getElementById("edit-content").value;
+
+    if (!title || !content) {
+        alert("Title and content are required.");
+        return;
+    }
+
+    const response = await fetch(`${apiBaseUrl}/posts/${editingPostId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title, content })
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        alert(`Error: ${error.error}`);
+        return;
+    }
+
+    document.getElementById("edit-container").style.display = "none";
+    loadPosts();
+}
+
+function cancelEdit() {
+    document.getElementById("edit-container").style.display = "none";
+    editingPostId = null;
 }

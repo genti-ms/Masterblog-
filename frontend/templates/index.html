@@ -5,32 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog Posts</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="static/styles.css"> <!-- CSS for styling -->
+    <link rel="stylesheet" href="static/styles.css">
 </head>
 <body>
     <div class="container">
         <h1>📚 Blog Posts</h1>
 
-        <!-- Input field for API Base URL -->
         <div class="input-field">
             <input type="text" id="api-base-url" placeholder="Enter API Base URL" value="http://127.0.0.1:5002/api">
-            <button onclick="loadPosts()">Load Posts</button> <!-- Button to load posts -->
+            <button onclick="loadPosts()">Load Posts</button>
         </div>
 
-        <!-- Input fields for adding a new post -->
         <div class="input-field">
             <input type="text" id="post-title" placeholder="Enter Post Title">
             <input type="text" id="post-content" placeholder="Enter Post Content">
-            <button onclick="addPost()">Add Post</button> <!-- Button to add a new post -->
+            <button onclick="addPost()">Add Post</button>
         </div>
 
-        <!-- Container where the posts will be displayed -->
-        <div id="post-container">
-            <!-- Blog posts will be inserted here by JavaScript -->
+        <div id="post-container"></div>
+
+        <!-- Edit form -->
+        <div id="edit-container" style="display:none;">
+            <input type="text" id="edit-title" placeholder="Edit Post Title">
+            <input type="text" id="edit-content" placeholder="Edit Post Content">
+            <button onclick="updatePost()">Update Post</button>
+            <button onclick="cancelEdit()">Cancel</button>
         </div>
     </div>
 
-    <!-- Linking the main.js script -->
     <script src="static/main.js"></script>
 </body>
 </html>
